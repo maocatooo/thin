@@ -5,6 +5,9 @@ import (
 	"sync"
 )
 
+/*
+处理 topic 对应的消息
+*/
 func Subscribe(topic string, h interface{}) error {
 	return subscribe(topic, h)
 }
