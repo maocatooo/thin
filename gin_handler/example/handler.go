@@ -38,13 +38,33 @@ func A1(ctx *gin.Context, req *R1, rsp *R2) error {
 	fmt.Println(`req`, *req)
 	fmt.Println(`query`, query)
 	fmt.Println(`rsp`, rsp)
-	return nil
+	return fmt.Errorf("123")
 }
+
+type A struct {
+	a string
+}
+
+func (a A) A1(ctx *gin.Context, req *R1, rsp *R2) error {
+	var query Q1
+	err := ctx.BindQuery(&query)
+	if err != nil {
+		return err
+	}
+	fmt.Println(a.a)
+	fmt.Println(`req`, *req)
+	fmt.Println(`query`, query)
+	fmt.Println(`rsp`, rsp)
+	return fmt.Errorf("123")
+}
+
+var r1 = gin_handler.JsonBody
 
 func main() {
 
 	r := gin.Default()
-	r.Any("/ping", gin_handler.Post(A1))
+	r.POST("/ping", r1(A1))
+	r.POST("/pong", gin_handler.JsonBody(A{a: "a123"}.A1))
 	_ = r.Run() // listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")
 
 }

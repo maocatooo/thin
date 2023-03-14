@@ -15,23 +15,16 @@ const (
 var typeOfError = reflect.TypeOf((*error)(nil)).Elem()
 
 type handler struct {
-	isFunc bool
-
-	hd interface{}
-
-	method reflect.Value
-
-	structValue reflect.Value
-	ctxType     reflect.Type
-	reqType     reflect.Type
-	rspType     reflect.Type
+	isFunc  bool
+	method  reflect.Value
+	ctxType reflect.Type
+	reqType reflect.Type
+	rspType reflect.Type
 }
 
 func (h *handler) call(ctx *gin.Context, req, rsp reflect.Value) error {
 	var value []reflect.Value
-	if !h.isFunc {
-		value = append(value, h.structValue)
-	}
+
 	value = append(value,
 		reflect.ValueOf(ctx),
 		req,
@@ -69,7 +62,6 @@ func validate(hd interface{}) error {
 		argType1 reflect.Type
 		argType2 reflect.Type
 	)
-
 	if typ.Kind() == reflect.Func {
 		name := "Func"
 		switch typ.NumIn() {
