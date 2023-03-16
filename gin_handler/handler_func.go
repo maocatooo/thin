@@ -8,7 +8,7 @@ import (
 )
 
 // 注册POST,PUT,DELETE请求获取 JsonBody
-func JsonBody(hd interface{}) gin.HandlerFunc {
+func JSON(hd interface{}) gin.HandlerFunc {
 	return handlerFunc(hd, binding.JSON)
 }
 
@@ -17,11 +17,11 @@ func Query(hd interface{}) gin.HandlerFunc {
 	return handlerFunc(hd, binding.Query)
 }
 
-func HandlerFunc(hd interface{}, bb binding.Binding) gin.HandlerFunc {
-	return handlerFunc(hd, bb)
+func HandlerFunc(hd interface{}, b binding.Binding) gin.HandlerFunc {
+	return handlerFunc(hd, b)
 }
 
-func handlerFunc(hd interface{}, bb binding.Binding) gin.HandlerFunc {
+func handlerFunc(hd interface{}, b binding.Binding) gin.HandlerFunc {
 	handler, err := toHandler(hd)
 	if err != nil {
 		panic(err)
@@ -31,7 +31,7 @@ func handlerFunc(hd interface{}, bb binding.Binding) gin.HandlerFunc {
 			req = reflect.New(handler.reqType.Elem())
 			rsp = reflect.New(handler.rspType.Elem())
 		)
-		if err := ctx.ShouldBindWith(req.Interface(), bb); err != nil && err != io.EOF {
+		if err := ctx.ShouldBindWith(req.Interface(), b); err != nil && err != io.EOF {
 			AbortWithBindErr(ctx, err)
 			return
 		}

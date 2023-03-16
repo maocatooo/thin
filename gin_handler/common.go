@@ -43,14 +43,18 @@ func ErrResultWithErr(err error) RestResult {
 	return ErrResult(err.Error())
 }
 
-func AbortWithErr(ctx *gin.Context, err error) {
+var AbortWithErr = abortWithErr
+
+func abortWithErr(ctx *gin.Context, err error) {
 	r := RestResult{}
 	r.Code = ErrCode
 	r.Message = err.Error()
 	ctx.AbortWithStatusJSON(ErrCode, r)
 }
 
-func AbortWithBindErr(ctx *gin.Context, err error) {
+var AbortWithBindErr = abortWithBindErr
+
+func abortWithBindErr(ctx *gin.Context, err error) {
 	r := RestResult{}
 	r.Code = BindErrCode
 	r.Message = err.Error()

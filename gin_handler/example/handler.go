@@ -6,65 +6,55 @@ import (
 	"github.com/maocatooo/thin/gin_handler"
 )
 
-type R1 struct {
-	A1   string `json:"a1"`
+type Req struct {
 	Name string `json:"name"`
 }
 
-type Q1 struct {
-	A1   string `form:"a1"`
+type Query struct {
 	Name string `form:"name"`
 }
 
-type R2 struct {
-	A1 string `json:"a_1"`
-	A2 string `json:"a_2"`
+type Resp struct {
+	Code    int    `json:"code"`
+	Message string `json:"message"`
 }
 
 /*
-POST http://127.0.0.1:8080/ping?a1=1a&&name=ddd
-
-{
-	"A1":"123"
-}
+GET http://127.0.0.1:8080/ping?name=123
 */
-
-func A1(ctx *gin.Context, req *R1, rsp *R2) error {
-	var query Q1
-	err := ctx.BindQuery(&query)
-	if err != nil {
-		return err
+func Ping(ctx *gin.Context, req *Query, rsp *Resp) error {
+	fmt.Printf("Ping req: %+v \n", *req)
+	if req.Name == "123" {
+		return fmt.Errorf("err 123")
 	}
-	fmt.Println(`req`, *req)
-	fmt.Println(`query`, query)
-	fmt.Println(`rsp`, rsp)
-	return fmt.Errorf("123")
+	rsp.Code = 200
+	rsp.Message = req.Name
+	return nil
 }
 
 type A struct {
 	a string
 }
 
-func (a A) A1(ctx *gin.Context, req *R1, rsp *R2) error {
-	var query Q1
-	err := ctx.BindQuery(&query)
-	if err != nil {
-		return err
+/*
+POST http://127.0.0.1:8080/pong
+{
+	"name":"456"
+}
+*/
+func (a A) Pong(ctx *gin.Context, req *Req, rsp *Resp) error {
+	fmt.Printf("Pong req: %+v \n", *req)
+	if req.Name == "123" {
+		return fmt.Errorf("123")
 	}
-	fmt.Println(a.a)
-	fmt.Println(`req`, *req)
-	fmt.Println(`query`, query)
-	fmt.Println(`rsp`, rsp)
-	return fmt.Errorf("123")
+	rsp.Code = 200
+	rsp.Message = req.Name
+	return nil
 }
 
-var r1 = gin_handler.JsonBody
-
 func main() {
-
 	r := gin.Default()
-	r.POST("/ping", r1(A1))
-	r.POST("/pong", gin_handler.JsonBody(A{a: "a123"}.A1))
-	_ = r.Run() // listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")
-
+	r.GET("/ping", gin_handler.Query(Ping))
+	r.POST("/pong", gin_handler.JSON(A{a: "a123"}.Pong))
+	_ = r.Run()
 }
